@@ -8,12 +8,14 @@ import 'signup_page.dart';
 import 'home_page_visual.dart';
  // Ensure you have a signup_page.dart file
 
-void main() {
-  Gemini.init(
-    apiKey: GEMINI_API_KEY,
-  );
-  runApp(MyApp());
-}
+ void main() {
+   Gemini.init(
+     apiKey: GEMINI_API_KEY,
+     generationConfig: GenerationConfig(),
+     enableDebugging: true,
+      );
+   runApp(MyApp());
+ }
 
 class MyApp extends StatelessWidget {
   @override

@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'ai_tutor.dart';
-import 'focus_mode_page.dart'; // Import the Focus Mode page
+import 'focus_mode_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  String? _selectedPreference; // Initialize as null to avoid the initial value error
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+  String? _selectedPreference;
+  late AnimationController _controller;
+  late Animation<double> _animation;
 
-  // Dummy list of subjects for demonstration
   List<String> subjectNames = [
     'Maths', 'Science', 'History', 'Language', 'Arts',
     'Geography', 'Music', 'Computer', 'Physics', 'Biology',
   ];
 
-  // Example data placeholders for recommended videos
   List<String> videoTitles = [
     'C++ Basics in One Shot - Strivers A2Z DSA Course - L1',
-    'Introduction to JavaScript + Setup | JavaScript Tutorial in Hindi #1',
+    'Introduction to JavaScript + Setup | JavaScript Tutorial in Hindi #1', 
     'Python Tutorial for Beginners | Learn Python in 1.5 Hours',
     'ApnaCollegeOfficial which Coding Platform should I study from?',
     'Web Development Tutorial for Beginners (2024 Edition)',
@@ -35,17 +36,33 @@ class _HomePageState extends State<HomePage> {
 
   int _selectedIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
     switch (index) {
       case 0:
-      // Navigate to Home (current page)
         break;
       case 1:
-      // Navigate to My Learning
-      // Example: Navigator.push(context, MaterialPageRoute(builder: (context) => MyLearningPage()));
         break;
       case 2:
         Navigator.push(
@@ -58,18 +75,19 @@ class _HomePageState extends State<HomePage> {
 
   void _navigateToFocusMode() {
     Navigator.push(
-      context,
+      context, 
       MaterialPageRoute(builder: (context) => FocusModePage()),
     );
   }
 
-  TextEditingController _taskController = TextEditingController();
+  final TextEditingController _taskController = TextEditingController();
   List<String> tasks = [];
 
   void _addTask(String task) {
     setState(() {
       tasks.add(task);
-      _taskController.clear(); // Clear input field after adding task
+      _taskController.clear();
+      _controller.forward(from: 0.0);
     });
   }
 
@@ -83,214 +101,274 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF48A9A6),
-        title: Text('EduAI'),
-        actions: [
-          /*IconButton(
-            icon: Image.asset(
-              'lib/assets/profile_icon.jpg', // Replace with your asset image path
-              width: 30,
-              height: 30,
-            ),
-            onPressed: () {
-              // Navigate to profile screen or show profile menu
-            },
-          ),*/
-        ],
+        elevation: 0,
+        backgroundColor: Colors.white,
+        title: Text('EduAI', 
+          style: GoogleFonts.montserrat(
+            fontSize: 24,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Colors.black87),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(0),
+          ),
+        ),
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(
-                color: Color(0xFF48A9A6),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  bottom: BorderSide(color: Colors.black12),
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 40,
-                    backgroundImage: AssetImage('lib/assets/profile_icon.jpg'),
+                    // backgroundImage: AssetImage('lib/assets/profile_icon.jpg'),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
-                    'Harshita', // Replace with user's name
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                    'Vidyasaagar',
+                    style: GoogleFonts.montserrat(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
                   ),
                 ],
               ),
             ),
             ListTile(
-              title: Text('Settings'),
-              onTap: () {
-                // Handle navigation to settings
-              },
+              leading: const Icon(Icons.settings, color: Colors.black54),
+              title: Text('Settings',
+                style: GoogleFonts.montserrat(fontSize: 16)
+              ),
+              onTap: () {},
             ),
             ListTile(
-              title: Text('FAQ'),
-              onTap: () {
-                // Handle navigation to FAQ
-              },
+              leading: const Icon(Icons.help_outline, color: Colors.black54),
+              title: Text('FAQ',
+                style: GoogleFonts.montserrat(fontSize: 16)
+              ),
+              onTap: () {},
             ),
-            // Add more list items as needed
           ],
         ),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search courses',
-                        suffixStyle: TextStyle(color: Color(0xFF531002)),
-                        suffixIcon: Icon(Icons.search),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.white,
+                  border: Border.all(color: Colors.black12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Search courses',
+                          hintStyle: GoogleFonts.montserrat(color: Colors.grey),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                          suffixIcon: const Icon(Icons.search, color: Colors.black54),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(width: 10), // Adjust spacing between search bar and dropdown button
-                  DropdownButton<String>(
-                    hint: Text(
-                      'Preference',
-                      style: TextStyle(color: Color(0xFF531002)),
-                    ),
-                    value: _selectedPreference,
-                    items: ['Visual', 'Auditory', 'Reading/Writing', 'Kinesthetic']
-                        .map((String preference) {
-                      return DropdownMenuItem<String>(
-                        value: preference,
-                        child: Text(
-                          preference,
-                          style: TextStyle(color: Colors.black87), // Adjust text color
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      alignment: Alignment.center,
+                      child: DropdownButton<String>(
+                        hint: Text(
+                          'Preference',
+                          style: GoogleFonts.montserrat(color: Colors.black54),
                         ),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedPreference = newValue;
-                      });
-                      // Implement logic to filter based on preference
-                    },
-                    icon: Icon(Icons.arrow_drop_down),
-                    underline: Container(),
-                    elevation: 0,
-                    style: TextStyle(color: Color(0xFFFDB8AF)), // Set dropdown button text color
-                  ),
-                ],
+                        value: _selectedPreference,
+                        items: ['Visual', 'Auditory', 'Reading/Writing', 'Kinesthetic']
+                            .map((String preference) {
+                          return DropdownMenuItem<String>(
+                            value: preference,
+                            child: Text(
+                              preference,
+                              style: GoogleFonts.montserrat(),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _selectedPreference = newValue;
+                          });
+                        },
+                        icon: const Icon(Icons.tune, color: Colors.black54),
+                        underline: Container(),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 25),
               Text(
                 'Recommended for you',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF002131)),
+                style: GoogleFonts.montserrat(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
               ),
-              SizedBox(height: 10),
-              Container(
-                height: 200,
+              const SizedBox(height: 15),
+              SizedBox(
+                height: 220,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: videoTitles.length,
                   itemBuilder: (BuildContext context, int index) {
-                    String videoTitle = videoTitles[index];
-                    String imageURL = videoImageUrls[index]; // Assuming you have a list of URLs
-
-                    return Padding(
-                      padding: EdgeInsets.only(right: 10),
-                      child: SizedBox(
-                        width: 200, // Fixed width for each card
-                        child: Card(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
-                                child: Image.network(
-                                  imageURL, // Use the actual image URL here
-                                  width: 200,
-                                  height: 120,
-                                  fit: BoxFit.cover,
+                    return Container(
+                      width: 280,
+                      margin: const EdgeInsets.only(right: 15),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.black12),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Stack(
+                          children: [
+                            Image.network(
+                              videoImageUrls[index],
+                              width: double.infinity,
+                              height: 220,
+                              fit: BoxFit.cover,
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                    colors: [
+                                      Colors.black87,
+                                      Colors.transparent,
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
                                 child: Text(
-                                  videoTitle,
-                                  maxLines: 2, // Limit the number of lines
-                                  overflow: TextOverflow.ellipsis, // Handle overflow
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
+                                  videoTitles[index],
+                                  maxLines: 2,
+                                  style: GoogleFonts.montserrat(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     );
                   },
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 25),
               Text(
                 'Subjects',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF002131)),
+                style: GoogleFonts.montserrat(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
               ),
-              SizedBox(height: 10),
-              Container(
-                height: 100,
+              const SizedBox(height: 15),
+              SizedBox(
+                height: 120,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: subjectNames.length,
                   itemBuilder: (BuildContext context, int index) {
-                    String subjectName = subjectNames[index];
-                    return _buildSubjectCard(subjectName, index);
+                    return _buildSubjectCard(subjectNames[index], index);
                   },
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 25),
               Text(
                 'Your Tasks',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF002131)),
+                style: GoogleFonts.montserrat(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
               ),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _taskController,
-                      decoration: InputDecoration(
-                        hintText: 'Enter task',
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.add),
-                          onPressed: () {
-                            _addTask(_taskController.text.trim());
-                          },
-                        ),
-                      ),
+              const SizedBox(height: 15),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.black12),
+                ),
+                child: TextField(
+                  controller: _taskController,
+                  decoration: InputDecoration(
+                    hintText: 'Add a new task',
+                    hintStyle: GoogleFonts.montserrat(color: Colors.grey),
+                    border: InputBorder.none,
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.add_circle, color: Colors.black54, size: 28),
+                      onPressed: () => _addTask(_taskController.text.trim()),
                     ),
                   ),
-                ],
+                ),
               ),
-              SizedBox(height: 10),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: tasks.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(tasks[index]),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        _deleteTask(index);
-                      },
-                    ),
+              const SizedBox(height: 10),
+              AnimatedBuilder(
+                animation: _animation,
+                builder: (context, child) {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: tasks.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.black12),
+                        ),
+                        child: ListTile(
+                          title: Text(
+                            tasks[index],
+                            style: GoogleFonts.montserrat(fontSize: 16),
+                          ),
+
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                            onPressed: () => _deleteTask(index),
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
               ),
@@ -299,30 +377,28 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(15.0),
-            topRight: Radius.circular(15.0),
-          ),
-          color: Color(0xFF48A9A6),
+        decoration: const BoxDecoration(
+          border: Border(top: BorderSide(color: Colors.black12)),
         ),
         child: BottomNavigationBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.white,
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
-          selectedItemColor: Colors.white, // Color of selected item's icon and text
-          unselectedItemColor: Colors.white.withOpacity(0.6), // Color of unselected item's icon and text
-          items: const <BottomNavigationBarItem>[
+          selectedItemColor: Colors.black87,
+          unselectedItemColor: Colors.black54,
+          selectedLabelStyle: GoogleFonts.montserrat(fontWeight: FontWeight.w500),
+          unselectedLabelStyle: GoogleFonts.montserrat(),
+          items: const [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: Icon(Icons.home_rounded),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.book),
+              icon: Icon(Icons.book_rounded),
               label: 'My Learning',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.school),
+              icon: Icon(Icons.school_rounded),
               label: 'AI Tutor',
             ),
           ],
@@ -330,40 +406,39 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToFocusMode,
-        backgroundColor: Color(0xFF48A9A6), // Change the background color of the floating action button
-        tooltip: 'Focus Mode',
-        child: Icon(Icons.timer, color: Colors.white), // Change the color of the icon
+        backgroundColor: Colors.black87,
+        elevation: 2,
+        child: const Icon(Icons.timer_rounded, color: Colors.white),
       ),
     );
   }
 
   Widget _buildSubjectCard(String subjectName, int index) {
-    return Padding(
-      padding: EdgeInsets.only(right: 10),
-      child: SizedBox(
-        width: 150,
-        child: Card(
-          color: Colors.grey[200], // Neutral color for the card background
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.book,
-                  size: 40,
-                  color: Color(0xFF48A9A6), // Adjust the book icon color
-                ),
-                SizedBox(height: 8),
-                Text(
-                  subjectName,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ],
+    return Container(
+      width: 160,
+      margin: const EdgeInsets.only(right: 15),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.black12),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.book_rounded,
+            size: 45,
+            color: Colors.black87,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            subjectName,
+            style: GoogleFonts.montserrat(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
             ),
           ),
-        ),
+        ],
       ),
     );
   }
