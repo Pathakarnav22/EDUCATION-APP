@@ -12,3 +12,4 @@
 - Python, Flask, Pandas, Sklearn for model development and integration<br>
 - Youtube API and Chatbot API integrated in the app<br>
 - Various plugins for the features of the app<br>
+# EDUCATION-APP
